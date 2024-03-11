@@ -2,74 +2,98 @@ import React from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 const data = [
-  { name: 'Point1', uv: 400, pv: 2400, amt: 2400 },
-  { name: 'Point2', uv: 300, pv: 1398, amt: 2210 },
-  { name: 'Point3', uv: 200, pv: 9800, amt: 2290 },
-  { name: 'Point4', uv: 278, pv: 3908, amt: 2000 },
-  { name: 'Point5', uv: 189, pv: 4800, amt: 2181 },
-  { name: 'Point6', uv: 239, pv: 3800, amt: 2500 },
-  { name: 'Point7', uv: 349, pv: 4300, amt: 2100 },
+  { name: '0:00', ml: 5 },
+  { name: '0:30', ml: 10 },
+  { name: '1:00', ml: 0 },
+  { name: '1:30', ml: 1 },
+  { name: '2:00', ml: 3 },
+  { name: '2:30', ml: 20 },
+  { name: '3:00', ml: 14 },
+  { name: '3:30', ml: 20 },
+  { name: '4:00', ml: 15 },
+  { name: '4:30', ml: 11 },
+  { name: '5:00', ml: 6 },
+  { name: '5:30', ml: 2 },
+  { name: '6:00', ml: 3 },
+  { name: '6:30', ml: 12 },
+  { name: '7:00', ml: 4 },
+  { name: '7:30', ml: 11 },
+  { name: '8:00', ml: 3 },
+  { name: '8:30', ml: 9 },
+  { name: '9:00', ml: 12 },
+  { name: '9:30', ml: 15 },
+  { name: '10:00', ml: 11 },
+  { name: '10:30', ml: 19 },
+  { name: '11:00', ml: 5 },
+  { name: '11:30', ml: 18 },
+  { name: '12:00', ml: 4 },
+  { name: '12:30', ml: 6 },
+  { name: '13:00', ml: 15 },
+  { name: '13:30', ml: 17 },
+  { name: '14:00', ml: 19 },
+  { name: '14:30', ml: 5 },
+  { name: '15:00', ml: 7 },
+  { name: '15:30', ml: 14 },
+  { name: '16:00', ml: 2 },
+  { name: '16:30', ml: 19 },
+  { name: '17:00', ml: 8 },
+  { name: '17:30', ml: 19 },
+  { name: '18:00', ml: 14 },
+  { name: '18:30', ml: 19 },
+  { name: '19:00', ml: 17 },
+  { name: '19:30', ml: 14 },
+  { name: '20:00', ml: 14 },
+  { name: '20:30', ml: 1 },
+  { name: '21:00', ml: 14 },
+  { name: '21:30', ml: 19 },
+  { name: '22:00', ml: 4 },
+  { name: '22:30', ml: 7 },
+  { name: '23:00', ml: 13 },
+  { name: '23:30', ml: 11 }
 ];
+function exportCSVFile(items, fileTitle) {
+  const headers = {
+    name: 'Time',
+    ml: 'Water Usage (mL)'
+  };
 
-function convertToCSV(arr) {
-  const array = [Object.keys(arr[0])].concat(arr)
-  return array.map(it => {
-    return Object.values(it).toString()
-  }).join('\n')
-}
-
-function exportCSVFile(headers, items, fileTitle) {
-  if (headers) {
-      items.unshift(headers);
-  }
-
-  // Convert Object to JSON
-  var jsonObject = JSON.stringify(items);
-
-  var csv = convertToCSV(items);
-  var exportedFilenmae = fileTitle + '.csv' || 'export.csv';
-
-  var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-  if (navigator.msSaveBlob) { // IE 10+
-      navigator.msSaveBlob(blob, exportedFilenmae);
+  const csv = [Object.keys(headers).join(','), ...items.map(item => `${item.name},${item.ml}`)].join('\n');
+  const exportedFilename = fileTitle + '.csv' || 'export.csv';
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  
+  if (navigator.msSaveBlob) {
+    navigator.msSaveBlob(blob, exportedFilename);
   } else {
-      var link = document.createElement("a");
-      if (link.download !== undefined) { // feature detection
-          // Browsers that support HTML5 download attribute
-          var url = URL.createObjectURL(blob);
-          link.setAttribute("href", url);
-          link.setAttribute("download", exportedFilenmae);
-          link.style.visibility = 'hidden';
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-      }
+    const link = document.createElement("a");
+    if (link.download !== undefined) {
+      const url = URL.createObjectURL(blob);
+      link.setAttribute("href", url);
+      link.setAttribute("download", exportedFilename);
+      document.body.appendChild(link); // Required for FF
+      link.click();
+      document.body.removeChild(link);
+    }
   }
 }
 
 function Charts() {
   const handleExport = () => {
-    exportCSVFile(null, data, 'moisture_data');
+    exportCSVFile(data, 'water_usage_data');
   };
 
   return (
     <div>
       <ResponsiveContainer width="100%" height={300}>
-        <LineChart data={data} margin={{ top: 50, right: 30, left: 20, bottom: 5 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#ccc" />
-          <XAxis dataKey="name" stroke="#ccc" />
-          <YAxis stroke="#ccc" />
-          <Tooltip 
-            wrapperStyle={{ backgroundColor: '#222', borderColor: '#444' }} 
-            labelStyle={{ color: '#ccc' }}
-            itemStyle={{ color: '#ccc' }}
-          />
-          <Legend wrapperStyle={{ color: '#ccc' }} />
-          <Line type="monotone" dataKey="pv" stroke="#8884d8" activeDot={{ r: 8 }} />
-          <Line type="monotone" dataKey="uv" stroke="#82ca9d" />
+        <LineChart data={data} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="name" />
+          <YAxis />
+          <Tooltip />
+          <Legend />
+          <Line type="monotone" dataKey="ml" stroke="#82ca9d" />
         </LineChart>
       </ResponsiveContainer>
-      <button onClick={handleExport} style={{ marginTop: '20px' }}>Export Moisture Data</button>
+      <button onClick={handleExport} style={{ marginTop: '20px' }}>Export Water Usage Data</button>
     </div>
   );
 }

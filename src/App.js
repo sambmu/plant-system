@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Charts from './Charts'; // Assume this is the graph component you created
+import Dashboard from './Dashboard'; // Import the Dashboard component
 
 function App() {
   const [data, setData] = useState(0);
@@ -12,8 +13,9 @@ function App() {
   }, []);
 
   return (
-    <div className="App" style={{ fontFamily: 'Courier'}}>
-      <h1>Autonomous Plant Watering System Gateway</h1>
+    <div className="App" style={{ fontFamily: 'Courier' }}>
+      <h1 style={{ textAlign: 'center' }}>Autonomous Plant Watering System Gateway</h1>
+      <Dashboard /> {/* Incorporate the Dashboard component here */}
       <Charts />
     </div>
   );
